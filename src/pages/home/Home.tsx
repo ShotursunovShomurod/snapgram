@@ -46,7 +46,7 @@ const Home = () => {
                         onClick={() =>
                             handleFollow("unfollow/" + user.username)
                         }
-                        className="hover:opacity-60 block text-xs text-neutral-700 font-semibold py-[6px] px-[18px] rounded-lg bg-[#ff0404]">
+                        className="hover:opacity-60 block text-xs text-white font-semibold py-[6px] px-[18px] rounded-lg bg-[#ff0404]">
                         Unfollow
                     </button>
                 ) : (
