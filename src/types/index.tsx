@@ -8,3 +8,15 @@ export interface Product {
     price: number;
     images: string[];
 }
+
+export interface User {
+    _id: string;
+    fullName: string;
+    photo: string;
+    username: string;
+    followers: [
+        {
+            _id: string;
+        }
+    ];
+}

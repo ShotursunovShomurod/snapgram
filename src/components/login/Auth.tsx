@@ -8,12 +8,16 @@ import {
     useSignInMutation,
 } from "../../redux/api/user-api";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../redux";
+import { setToken, setUser } from "../../redux/slice/auth-slice";
 
 const Auth = () => {
-    const [action, setAction] = useState<string>("Sign In");
+    const [action, setAction] = useState<string>("Log in");
     const [users, { isSuccess }] = useRegisterUserMutation();
     const [user, { isSuccess: isUserSuccess }] = useSignInMutation();
     const navigate = useNavigate();
+    const dispatch: AppDispatch = useDispatch();
 
     const handleSendMessage = async (e: any) => {
         e.preventDefault();
@@ -21,8 +25,9 @@ const Auth = () => {
         let data = Object.fromEntries(formData.entries());
         user(data)
             .unwrap()
-            .then((res: { accessToken: string }) => {
-                localStorage.setItem("accessToken", res.accessToken);
+            .then((res: { accessToken: string; user: any }) => {
+                dispatch(setToken(res.accessToken));
+                dispatch(setUser(res.user));
                 location.pathname = "/";
             });
     };
@@ -33,8 +38,9 @@ const Auth = () => {
         let data = Object.fromEntries(formData.entries());
         users(data)
             .unwrap()
-            .then((res: { accessToken: string }) => {
-                localStorage.setItem("accessToken", res.accessToken);
+            .then((res: { accessToken: string; user: any }) => {
+                dispatch(setToken(res.accessToken));
+                dispatch(setUser(res.user));
                 location.pathname = "/";
             });
     };

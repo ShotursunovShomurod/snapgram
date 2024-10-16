@@ -1,21 +1,42 @@
 import { lazy, LazyExoticComponent } from "react";
 import { useRoutes } from "react-router-dom";
 import { SuspenseComponent as Suspense } from "../utils";
-import Auths from "../pages/Auths";
 
-const About: LazyExoticComponent<any> = lazy(
-    () => import("../pages/about/About")
+const House: LazyExoticComponent<any> = lazy(
+    () => import("../components/house/House")
 );
-const Company: LazyExoticComponent<any> = lazy(
-    () => import("../pages/company/Company")
+
+const Create: LazyExoticComponent<any> = lazy(
+    () => import("../components/create/Create")
 );
-const Detail: LazyExoticComponent<any> = lazy(
-    () => import("../pages/detail/Detail")
+
+const People: LazyExoticComponent<any> = lazy(
+    () => import("../components/people/People")
 );
+
+const Chats: LazyExoticComponent<any> = lazy(
+    () => import("../components/chats/Chats")
+);
+
+const Reels: LazyExoticComponent<any> = lazy(
+    () => import("../components/reels/Reels")
+);
+
+const Saved: LazyExoticComponent<any> = lazy(
+    () => import("../components/saved/Saved")
+);
+
+const Explore: LazyExoticComponent<any> = lazy(
+    () => import("../components/explore/Explore")
+);
+
 const Layout: LazyExoticComponent<any> = lazy(
     () => import("../pages/layout/Layout")
 );
-const Auth: LazyExoticComponent<any> = lazy(
+
+const Auth: LazyExoticComponent<any> = lazy(() => import("../pages/Auths"));
+
+const Login: LazyExoticComponent<any> = lazy(
     () => import("../components/login/Auth")
 );
 
@@ -35,7 +56,7 @@ const Routers = () => {
                     path: "/login",
                     element: (
                         <Suspense>
-                            <Auth />
+                            <Login />
                         </Suspense>
                     ),
                 },
@@ -43,43 +64,85 @@ const Routers = () => {
                     path: "/",
                     element: (
                         <Suspense>
-                            <Auths />
-                        </Suspense>
-                    ),
-                },
-                {
-                    path: "/home",
-                    element: (
-                        <Suspense>
-                            <Home />
-                        </Suspense>
-                    ),
-                },
-                {
-                    path: "/about",
-                    element: (
-                        <Suspense>
-                            <About />
+                            <Auth />
                         </Suspense>
                     ),
                     children: [
                         {
-                            path: "company",
+                            path: "",
                             element: (
                                 <Suspense>
-                                    <Company />
+                                    <Home />
                                 </Suspense>
                             ),
+                            children: [
+                                {
+                                    path: "",
+                                    element: (
+                                        <Suspense>
+                                            <House />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    path: "/explore",
+                                    element: (
+                                        <Suspense>
+                                            <Explore />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    path: "/people",
+                                    element: (
+                                        <Suspense>
+                                            <People />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    path: "/saved",
+                                    element: (
+                                        <Suspense>
+                                            <Saved />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    path: "/reels",
+                                    element: (
+                                        <Suspense>
+                                            <Reels />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    path: "/people",
+                                    element: (
+                                        <Suspense>
+                                            <People />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    path: "/chats",
+                                    element: (
+                                        <Suspense>
+                                            <Chats />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    path: "/create",
+                                    element: (
+                                        <Suspense>
+                                            <Create />
+                                        </Suspense>
+                                    ),
+                                },
+                            ],
                         },
                     ],
-                },
-                {
-                    path: "/product/:id",
-                    element: (
-                        <Suspense>
-                            <Detail />
-                        </Suspense>
-                    ),
                 },
             ],
         },
