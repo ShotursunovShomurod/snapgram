@@ -28,7 +28,7 @@ const Auth = () => {
             .then((res: { accessToken: string; user: any }) => {
                 dispatch(setToken(res.accessToken));
                 dispatch(setUser(res.user));
-                location.pathname = "/";
+                navigate("/");
             });
     };
 
@@ -41,7 +41,7 @@ const Auth = () => {
             .then((res: { accessToken: string; user: any }) => {
                 dispatch(setToken(res.accessToken));
                 dispatch(setUser(res.user));
-                location.pathname = "/";
+                navigate("/");
             });
     };
 
@@ -50,7 +50,7 @@ const Auth = () => {
             setAction("Log In");
         }
         if (isUserSuccess) {
-            navigate("/home");
+            navigate("/");
         }
     }, [isSuccess, isUserSuccess, navigate]);
 
