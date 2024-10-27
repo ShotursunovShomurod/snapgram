@@ -38,6 +38,12 @@ export const userApi = api.injectEndpoints({
             }),
             invalidatesTags: ["User"],
         }),
+        userProfile: build.query({
+            query: (username) => ({
+                url: `/api/user/profile/${username}`,
+            }),
+            providesTags: ["User"],
+        }),
     }),
 });
 
@@ -47,4 +53,5 @@ export const {
     useSignInMutation,
     useFollowMutation,
     useProfileQuery,
+    useUserProfileQuery,
 } = userApi;

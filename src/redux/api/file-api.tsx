@@ -25,6 +25,14 @@ export const fileApi = api.injectEndpoints({
             }),
             providesTags: [],
         }),
+        getUserPosts: build.query({
+            query: (params) => {
+                return {
+                    url: `/api/post/${params?.userId}`,
+                };
+            },
+            providesTags: [],
+        }),
     }),
 });
 
@@ -32,4 +40,5 @@ export const {
     useUploadFilesMutation,
     useCreatePostMutation,
     useGetPostsQuery,
+    useGetUserPostsQuery,
 } = fileApi;

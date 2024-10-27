@@ -1,5 +1,11 @@
+import NotFount from "../notFount/NotFount";
+
 const Saved = () => {
-    return <div>Saved</div>;
+    return (
+        <div>
+            <NotFount />
+        </div>
+    );
 };
 
 export default Saved;

@@ -6,7 +6,7 @@ const Auths = () => {
     const token = useSelector((state: RootState) => state.auth.token);
 
     if (!token) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="auth/login" replace />;
     }
 
     return <Outlet />;

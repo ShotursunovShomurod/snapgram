@@ -20,11 +20,3 @@ export interface User {
         }
     ];
 }
-
-export interface IPost {
-    content: string[];
-    content_alt: string;
-    caption: string;
-    location: string;
-    createdAt: string;
-}

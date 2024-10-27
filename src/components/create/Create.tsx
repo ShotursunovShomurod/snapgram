@@ -1,6 +1,6 @@
 import { MdCreateNewFolder } from "react-icons/md";
 import createimg from "../../images/create.svg";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import {
     useCreatePostMutation,
     useUploadFilesMutation,
@@ -12,50 +12,37 @@ import { useProfileQuery } from "../../redux/api/user-api";
 const Create = () => {
     const navigate = useNavigate();
     const [uploadFiles] = useUploadFilesMutation();
-    const [createPost] = useCreatePostMutation();
+    const [createPost, { isLoading }] = useCreatePostMutation();
     const [saveImages, setSaveImages] = useState<string[]>([]);
-    const [image, setImage] = useState<File[] | string>("");
+    const [image, setImage] = useState<File[]>([]);
     const [caption, setCaption] = useState<string>("");
     const [location, setLocation] = useState<string>("");
     const [contentAlt, setContentAlt] = useState<string>("");
     const { data: profile } = useProfileQuery({});
-    console.log(profile);
+    
+    const fileInputRef = useRef<HTMLInputElement | null>(null); // Ref for file input
 
     const handleUpload = () => {
         const formData = new FormData();
-        // @ts-ignore
-        Array.from(image).forEach((img: File) => {
+        image.forEach((img) => {
             formData.append("files", img, img.name);
         });
 
-        type FileObject = { url: string };
-
         uploadFiles(formData)
             .unwrap()
-            .then((res) =>
-                Object.keys(res).forEach((key: string) => {
-                    const fileGroup = res[key as keyof typeof res];
-                    if (Array.isArray(fileGroup)) {
-                        fileGroup.forEach((group: FileObject[]) => {
-                            group.forEach((file: FileObject) => {
-                                setSaveImages((prevImages: string[]) => [
-                                    ...prevImages,
-                                    file.url,
-                                ]);
-                            });
-                        });
-                    }
-                })
-            );
+            .then((res) => {
+                const urls = res.map((file: { url: string }) => file.url);
+                setSaveImages((prevImages) => [...prevImages, ...urls]);
+            });
     };
 
     const handleCreatePost = (e: FormEvent) => {
         e.preventDefault();
         const newPost = {
-            caption: caption,
-            location: location,
+            caption,
+            location,
             content_alt: contentAlt,
-            content: saveImages,
+            content: saveImages.map((link) => ({ type: "IMAGE", url: link })),
         };
         createPost(newPost)
             .unwrap()
@@ -64,47 +51,51 @@ const Create = () => {
             });
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files) {
+            setImage(Array.from(files));
+        }
+    };
+
+    const openFileDialog = () => {
+        fileInputRef.current?.click(); // Programmatically click the input
+    };
+
     return (
-        <div className="pt-[60px] pl-[40px]">
+        <div className="pt-[60px] px-4 pb-[85px] lg:pl-[40px]">
             <div>
-                <h1 className="text-white text-4xl font-bold flex items-center gap-x-[10px]">
+                <h1 className="text-white text-lg lg:text-4xl font-bold flex items-center gap-x-[10px]">
                     <MdCreateNewFolder /> Create a Post
                 </h1>
-                <div className="flex gap-x-[150px]">
-                    <form className="pb-6" action="">
+                <div className="flex lg:gap-x-[150px]">
+                    <form className="pb-6 w-full" onSubmit={handleCreatePost}>
                         <div className="mb-4">
-                            <p className="text-[#EFEFEF] text-lg font-medium mb-3">
+                            <p className="text-[#EFEFEF] lg:text-lg font-medium mb-3">
                                 Caption
                             </p>
                             <input
                                 required
-                                onChange={(e: any) =>
-                                    setCaption(e.target.value)
-                                }
-                                className="w-[630px] h-[114px] rounded-[10px] bg-[#101012] text-white"
+                                onChange={(e) => setCaption(e.target.value)}
+                                className="w-full lg:w-[630px] h-[114px] rounded-[10px] bg-[#101012] text-white"
                                 type="text"
-                                name="caption"
-                                id=""
                             />
                         </div>
                         <div>
-                            <p className="text-[#EFEFEF] text-lg font-medium mb-3">
+                            <p className="text-[#EFEFEF] lg:text-lg font-medium mb-3">
                                 Add Photos
                             </p>
-                            <div className="w-[630px] h-[289px] relative z-[2]">
+                            <div className="w-full lg:w-[630px] h-[289px] relative z-[2]">
                                 <input
+                                    ref={fileInputRef} // Assign ref to input
                                     required
-                                    onChange={(e: any) =>
-                                        setImage(e.target.files)
-                                    }
+                                    onChange={handleFileChange}
                                     className="absolute top-0 left-0 w-full h-full opacity-0 z-20"
                                     type="file"
-                                    name=""
                                     multiple
                                     accept="image/*"
-                                    id=""
                                 />
-                                <div className="flex flex-col items-center z-[3] absolute top-0 left-0 w-full h-full bg-[#101012] pt-12 rounded-[14px]">
+                                <div className="flex flex-col items-center z-[3] absolute top-0 left-0 w-full h-full bg-[#101012] pt-12 rounded-[14px]" onClick={openFileDialog}>
                                     <img src={createimg} alt="create img" />
                                     <p className="text-[#EFEFEF] font-semibold text-lg mb-2 mt-3">
                                         Drag photos and videos here
@@ -112,7 +103,7 @@ const Create = () => {
                                     <p className="text-xs text-[#5C5C7B] mb-4">
                                         SVG, PNG, JPG (max. 800x400px)
                                     </p>
-                                    <div className="py-[10px] px-5  bg-[#1F1F22] rounded-lg">
+                                    <div className="py-[10px] px-5 bg-[#1F1F22] rounded-lg">
                                         <p className="text-xs text-white font-semibold">
                                             Select from computer
                                         </p>
@@ -122,83 +113,65 @@ const Create = () => {
                         </div>
                         <div>
                             <div className="flex gap-1">
-                                {Object.values(image).map((i, inx) => (
-                                    <div className="relative" key={inx}>
+                                {image.map((file, index) => (
+                                    <div className="relative" key={index}>
                                         <img
-                                            className="w-[150px] h-[150px] object-cover"
-                                            src={URL.createObjectURL(i)}
+                                            className="w-[150px] h-[150px] object-cover rounded-lg"
+                                            src={URL.createObjectURL(file)}
                                             alt="photo"
                                         />
                                         <button
                                             type="button"
-                                            onClick={() =>
-                                                setImage((prev: any) =>
-                                                    [...prev].filter(
-                                                        (_, index) =>
-                                                            index !== inx
-                                                    )
-                                                )
-                                            }
-                                            className="text-white absolute top-0 right-0 bg-black">
-                                            <IoClose className="text-2xl" />
+                                            onClick={() => setImage((prev) => prev.filter((_, i) => i !== index))}
+                                            className="absolute top-0 right-0 bg-red-600 rounded-full p-1 text-white">
+                                            <IoClose className="text-lg" />
                                         </button>
                                     </div>
                                 ))}
                             </div>
-                            {image.length ? (
+                            {image.length > 0 && (
                                 <button
-                                    className="text-white py-2 px-4 rounded-lg bg-[#877EFF]"
+                                    className="text-white py-2 px-4 rounded-lg bg-[#877EFF] mt-2"
                                     type="button"
                                     onClick={handleUpload}>
                                     Upload
                                 </button>
-                            ) : null}
+                            )}
                         </div>
                         <div className="mb-4">
-                            <p className="text-[#EFEFEF] text-lg font-medium mb-3">
+                            <p className="text-[#EFEFEF] lg:text-lg font-medium mb-3">
                                 Add Location
                             </p>
                             <input
                                 required
-                                onChange={(e: any) =>
-                                    setLocation(e.target.value)
-                                }
-                                className="w-[630px] h-[54px] rounded-[10px] bg-[#101012] text-white"
+                                onChange={(e) => setLocation(e.target.value)}
+                                className="w-full lg:w-[630px] h-[54px] rounded-[10px] bg-[#101012] text-white"
                                 type="text"
-                                name="location"
-                                id=""
                             />
-                        </div>{" "}
+                        </div>
                         <div>
-                            <p className="text-[#EFEFEF] text-lg font-medium mb-3">
+                            <p className="text-[#EFEFEF] lg:text-lg font-medium mb-3">
                                 Photo/Video Alt Text
                             </p>
                             <input
                                 required
-                                onChange={(e: any) =>
-                                    setContentAlt(e.target.value)
-                                }
-                                className="w-[630px] h-[54px] rounded-[10px] bg-[#101012] text-white"
+                                onChange={(e) => setContentAlt(e.target.value)}
+                                className="w-full lg:w-[630px] h-[54px] rounded-[10px] bg-[#101012] text-white"
                                 type="text"
-                                name="content_alt"
-                                id=""
                             />
                         </div>
                         <button
-                            onClick={handleCreatePost}
+                            type="submit"
                             className="text-white font-semibold py-3 px-5 rounded-lg bg-[#877EFF] mt-10">
-                            Share Post
+                            {isLoading ? "Loading..." : "Share Post"}
                         </button>
                     </form>
-                    <div className="px-11">
+                    <div className="px-11 hidden lg:block">
                         <div className="w-[330px]">
-                            <div className="flex flex-col items-center ">
+                            <div className="flex flex-col items-center">
                                 <img
                                     className="w-[130px] h-[130px] rounded-full mb-6"
-                                    src={
-                                        import.meta.env.VITE_APP_BASE_URL +
-                                        profile?.photo
-                                    }
+                                    src={import.meta.env.VITE_APP_BASE_URL + profile?.photo}
                                     alt="img"
                                 />
                                 <p className="text-[30px] text-white font-bold mb-3">

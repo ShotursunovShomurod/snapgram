@@ -1,5 +1,11 @@
+import NotFount from "../notFount/NotFount";
+
 const Settings = () => {
-    return <div>Settings</div>;
+    return (
+        <div>
+            <NotFount />
+        </div>
+    );
 };
 
 export default Settings;

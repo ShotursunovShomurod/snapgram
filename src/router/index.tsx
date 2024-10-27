@@ -2,6 +2,14 @@ import { lazy, LazyExoticComponent } from "react";
 import { useRoutes } from "react-router-dom";
 import { SuspenseComponent as Suspense } from "../utils";
 
+const Detail: LazyExoticComponent<any> = lazy(
+    () => import("../components/detail/Detail")
+);
+
+const Profile: LazyExoticComponent<any> = lazy(
+    () => import("../components/profile/Profile")
+);
+
 const Settings: LazyExoticComponent<any> = lazy(
     () => import("../components/settings/Settings")
 );
@@ -57,7 +65,7 @@ const Routers = () => {
             ),
             children: [
                 {
-                    path: "/login",
+                    path: "/auth/login",
                     element: (
                         <Suspense>
                             <Login />
@@ -149,6 +157,22 @@ const Routers = () => {
                                     element: (
                                         <Suspense>
                                             <Settings />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    path: "/profile",
+                                    element: (
+                                        <Suspense>
+                                            <Profile />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    path: "/users/:username",
+                                    element: (
+                                        <Suspense>
+                                            <Detail />
                                         </Suspense>
                                     ),
                                 },

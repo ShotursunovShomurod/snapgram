@@ -1,5 +1,11 @@
+import NotFount from "../notFount/NotFount";
+
 const Reels = () => {
-    return <div>Reels</div>;
+    return (
+        <div>
+            <NotFount />
+        </div>
+    );
 };
 
 export default Reels;

@@ -1,5 +1,11 @@
+import NotFount from "../notFount/NotFount";
+
 const Explore = () => {
-    return <div>Explore</div>;
+    return (
+        <div>
+            <NotFount />
+        </div>
+    );
 };
 
 export default Explore;
